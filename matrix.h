@@ -2,7 +2,7 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
-struct matrix {
+extern struct matrix {
   double **m;
   int rows, cols;
   int lastcol;

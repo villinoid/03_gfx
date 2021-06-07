@@ -16,7 +16,7 @@ Creates the point structure in order to represent a pixel as a color triple
   Every point has an individual int for
   each color value
 */
-struct point_t {
+extern struct point_t {
 
   unsigned char red;
   unsigned char green;

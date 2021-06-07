@@ -69,36 +69,53 @@ void parse_file ( char * filename,
     f = fopen(filename, "r");
   
   while ( fgets(line, 255, f) != NULL ) {
-    line[strlen(line)-1]='\0';
-	if (!strcmp(line, "line")){
+    char *newline = strchr(line, '\n');
+	if (newline != NULL){
+		*(newline) = 0;
+	}
+	newline = strchr(line, 13);//CR character case only occurs when reading from files?
+	if (newline != NULL){
+		*(newline) = 0;
+	}
+	//char ch=line[0];
+	//int i=0;
+	//while(!(ch==0)){
+		//printf(":%d:\n",ch);
+	//	i++;
+		//ch=line[i];
+	//}
+	//printf("%d",strcmp(line, "line"));
+	//printf("%s\n",line);
+	if (!strcmp(line, "line\0")){
+		//printf("l\n");
 		fgets(line, 255, f);
 		double x0, y0, z0, x1, y1, z1;
 		sscanf(line, "%lf %lf %lf %lf %lf %lf",&x0,&y0,&z0,&x1,&y1,&z1);
 		add_edge(edges,x0,y0,z0,x1,y1,z1);
 	}
-	if (!strcmp(line, "ident")){
+	else if (!strcmp(line, "ident")){
 		ident(transform);
 	}
-	if (!strcmp(line, "scale")){
+	else if (!strcmp(line, "scale")){
 		fgets(line, 255, f);
 		double sx, sy, sz;
 		sscanf(line, "%lf %lf %lf",&sx,&sy,&sz);
 		t_m=make_scale(sx,sy,sz);
 		matrix_mult(t_m,transform);
 	}
-	if (!strcmp(line, "move")){
+	else if (!strcmp(line, "move")){
 		fgets(line, 255, f);
 		double tx, ty, tz;
 		sscanf(line, "%lf %lf %lf",&tx,&ty,&tz);
 		t_m=make_translate(tx,ty,tz);
 		matrix_mult(t_m,transform);
 	}
-	if (!strcmp(line, "rotate")){
+	else if (!strcmp(line, "rotate")){
 		fgets(line, 255, f);
 		char axis;
 		double theta;
 		sscanf(line, "%c %lf",&axis, &theta);
-		printf("%c %lf\n",axis, theta);
+		//printf("%c %lf\n",axis, theta);
 		theta=theta*M_PI/180;
 		if (axis=='x' || axis=='X'){
 			t_m=make_rotX(theta);
@@ -111,22 +128,24 @@ void parse_file ( char * filename,
 		}
 		matrix_mult(t_m,transform);
 	}
-	if(!strcmp(line,"apply")){
+	else if(!strcmp(line,"apply")){
 		matrix_mult(transform,edges);
 	}
-	if(!strcmp(line,"display")){
+	else if(!strcmp(line,"display")){
 		clear_screen(s);
 		draw_lines(edges,s,c);
 		display(s);
 	}
-	if (!strcmp(line,"save")){
+	else if (!strcmp(line,"save")){
 		fgets(line, 255, f);
 		line[strlen(line)-1]='\0';
 		clear_screen(s);
 		draw_lines(edges,s,c);
 		save_extension(s, line);
 	}
-	printf(":%s:\n",line);
+	else{
+	//printf(":%s:\n",line);
+	}
   }
 }
   
